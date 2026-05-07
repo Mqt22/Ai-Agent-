@@ -1,0 +1,161 @@
+{
+  "name": "ChatModel + Tool",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f15e07cb-203e-4c67-afd4-19830f192a4a",
+      "name": "When chat message received",
+      "webhookId": "35c53623-b51f-4324-aed2-262109d5c6c6"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "You are a data assistant. You have access to a Google Sheet containing inventory and user information. If a user asks for information from a sheet or a specific row, immediately use the 'Google Sheets' tool to fetch the data. Do not ask the user for the Sheet ID or Column names, as the tool is already pre-configured with the 'n8n Data' document.\n\nCondition:\n...If a user asks for information, NEVER ask for clarification or confirmation. Immediately call the Google Sheets tool to find the answer. If the user doesn't specify a row, assume they mean the first row."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "77147fde-8f9a-4614-a550-49e9365fd040",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-20b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        192,
+        192
+      ],
+      "id": "c98efc94-60d3-4db6-ad4d-ef86c5b65777",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "7SK1o6Ivphiswk1W",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        304,
+        256
+      ],
+      "id": "a9f61032-3f0d-4639-9364-ce11b5e09c04",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Use this tool to read data from the 'n8n Data' Google Sheet. You do not need to ask the user for a Sheet ID or Name; they are already configured. Simply call this tool to retrieve the requested rows",
+        "documentId": {
+          "__rl": true,
+          "value": "1r7cXTM8pLfdmCmhJD3IAos6Xxc8_t9uxZALd1MxBth0",
+          "mode": "list",
+          "cachedResultName": "Student Detail",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1r7cXTM8pLfdmCmhJD3IAos6Xxc8_t9uxZALd1MxBth0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1r7cXTM8pLfdmCmhJD3IAos6Xxc8_t9uxZALd1MxBth0/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        592,
+        128
+      ],
+      "id": "8b4248b6-f6a5-4276-a66f-5c6724322984",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "iYYmd6hPRi4pU4Kj",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "a496def9-3c3c-490c-b54b-74b315341192",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "18d191c839eced842f79fec87da2362894191fcd9c2553eb2065e1ad5ba1bfd4"
+  },
+  "id": "U8wjr3ilDVPQfjjw",
+  "tags": []
+}
